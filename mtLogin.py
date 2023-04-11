@@ -41,7 +41,7 @@ class MT5Class:
         else:
             account_info_dict = mt5.account_info()._asdict()
             self.account_info = pd.DataFrame(list(account_info_dict.items()), columns=['property', 'value'])
-            print(self.account_info)
+            # print(self.account_info)
 
 
 def get_historic_data(fx_symbol, fx_timeframe, fx_count):
@@ -49,7 +49,7 @@ def get_historic_data(fx_symbol, fx_timeframe, fx_count):
     rates = mt5.copy_rates_from_pos(fx_symbol, fx_timeframe, 0, fx_count)
     # dataframe
     historic_df = pd.DataFrame(rates)
-    print(historic_df.head())
+    # changing the time to datetime
     historic_df['time'] = pd.to_datetime(historic_df['time'], unit='s')
 
     return historic_df
