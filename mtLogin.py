@@ -3,10 +3,12 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
-LOGIN = 51176525
-SERVER = "ICMarketsSC-Demo"
+# acocount number
+LOGIN = 1# ACCOUNT NUMBER 
 # password
-PASSWORD = "53kZPYq6"
+PASSWORD = ""# ACCOUNT PASSWORD 
+
+SERVER = "ICMarketsSC-Demo"
 
 # display data on the MetaTrader 5 package
 print("MetaTrader5 package author: ", mt5.__author__)
