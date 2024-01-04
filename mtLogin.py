@@ -3,13 +3,17 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
-# acocount number
-LOGIN = 1# ACCOUNT NUMBER 
-# password
-PASSWORD = ""# ACCOUNT PASSWORD 
+# # acocount number
+# LOGIN = 1# ACCOUNT NUMBER 
+# # password
+# PASSWORD = ""# ACCOUNT PASSWORD 
 
 SERVER = "ICMarketsSC-Demo"
 
+# acocount number
+LOGIN = 51535169
+# password
+PASSWORD = "Cdm9I@7hsU"
 
 # display data on the MetaTrader 5 package
 print("MetaTrader5 package author: ", mt5.__author__)
@@ -22,7 +26,7 @@ class MT5Class:
         self.mt5_result = None
         self.account_info = None
 
-    def login_to_metatrader(self, login=LOGIN, password=PASSWORD):
+    def login_to_metatrader(self, login=LOGIN, password=PASSWORD) -> None:
         # Connect to the MetaTrader 5 terminal
         mt5.initialize()
 
@@ -35,14 +39,53 @@ class MT5Class:
             print("Login failed. Check your credentials.")
             quit()
 
-    def get_acc_info(self):
+    def get_acc_info(self) -> None:
 
         if mt5.account_info() is None:
             print("Account info is None!")
         else:
             account_info_dict = mt5.account_info()._asdict()
             self.account_info = pd.DataFrame(list(account_info_dict.items()), columns=['property', 'value'])
-            # print(self.account_info)
+            print(self.account_info)
+            
+    def get_all_orders(self) -> None:
+        """
+        This function get the number of current active orders
+        """
+        orders = mt5.orders_total()
+        
+        if orders > 0:
+            print("Total order = ", orders)
+        else:
+            print("No orders")
+        
+        return orders
+    
+    def get_orders_total_by_symbol(self, symbol: str="USDJPY") -> int:
+        """
+        This function get the number of current active orders filter for a given symbol
+        """
+        orders = mt5.orders_get(symbol=symbol)
+        
+        if len(orders) > 0:
+            print(f"USDJPY orders = {orders}")
+        else:
+            print(f"No orders for {symbol}")
+        
+        return orders
+    
+    def get_symbol_info(self, symbol: str="USDJPY"):
+        """
+        This function gets information for a given symbol
+        """
+        symbol_info = mt5.symbol_info(symbol)
+        
+        if symbol_info is None:
+            print(f"{symbol} not found")
+        if not symbol_info.visible:
+            print(f"{symbol} is not visible")
+        else:
+            print(symbol)
 
 
 def get_historic_data(fx_symbol, fx_timeframe, fx_count):
