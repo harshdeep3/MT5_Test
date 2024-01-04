@@ -1,4 +1,4 @@
-*/venv*
+**/python_11_venv**
 *.idea/*
 **saved_Files/**
 **__pycache__**
