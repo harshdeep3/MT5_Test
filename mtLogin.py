@@ -3,17 +3,12 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
-# # acocount number
-# LOGIN = 1# ACCOUNT NUMBER 
-# # password
-# PASSWORD = ""# ACCOUNT PASSWORD 
-
 SERVER = "ICMarketsSC-Demo"
 
 # acocount number
-LOGIN = 51535169
+LOGIN = 52069703
 # password
-PASSWORD = "Cdm9I@7hsU"
+PASSWORD = "8z$y2UX5s6aPFb"
 
 # display data on the MetaTrader 5 package
 print("MetaTrader5 package author: ", mt5.__author__)
@@ -110,7 +105,7 @@ class MT5Class:
 
         return symbol_info
     
-    def buy_symbol(self, price: float, lot: float, point: float, deviation: int):
+    def buy_symbol(self, symbol: str, price: float, lot: float, sl: float, tp: float, deviation: int):
         """
         The code block you provided is sending a trading request to buy a symbol at a
         specific price.
@@ -124,21 +119,22 @@ class MT5Class:
         Returns:
             _type_: _description_ - result of the buy request
         """
+
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
             "symbol": symbol,
             "volume": lot,
             "type": mt5.ORDER_TYPE_BUY,
             "price": price,
-            "sl": price - 100 * point,
-            "tp": price + 100 * point,
+            "sl": sl,
+            "tp": tp,
             "deviation": deviation,
             "magic": 234000,
             "comment": "python script open",
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_RETURN,
+            "type_filling": mt5.ORDER_FILLING_IOC,
         }
-                
+
         # send a trading request
         result = mt5.order_send(request)
         
@@ -148,7 +144,7 @@ class MT5Class:
         return result
     
     
-    def sell_symbol(self, price: float, lot: float, point: float, deviation: int):
+    def sell_symbol(self, symbol: str, price: float, lot: float, sl: float, tp: float, deviation: int):
         """
         Sending a buy signal at a given price. 
 
@@ -167,20 +163,20 @@ class MT5Class:
             "volume": lot,
             "type": mt5.ORDER_TYPE_BUY,
             "price": price,
-            "sl": price - 100 * point,
-            "tp": price + 100 * point,
+            "sl": sl,
+            "tp": tp,
             "deviation": deviation,
             "magic": 234000,
             "comment": "python script open",
             "type_time": mt5.ORDER_TIME_GTC,
-            "type_filling": mt5.ORDER_FILLING_RETURN,
+            "type_filling": mt5.ORDER_FILLING_IOC,
         }
                 
         # send a trading request
         result = mt5.order_send(request)
         
         # check the execution result
-        print(f"1. order_send(): by {symbol} {lot} lots at {price} with deviation={deviation} points")
+        print(f"order_send(): by {symbol} {lot} lots at {price} with deviation={deviation} points")
         
         return result
     
