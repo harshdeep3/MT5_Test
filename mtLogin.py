@@ -111,8 +111,7 @@ def buy_symbol(symbol: str, price: float, lot: float, sl: float, tp: float, devi
     return result
 
 
-def close_buy_position(symbol: str, price: float, lot: float, sl: float, tp: float, deviation: int,
-                       position_id):
+def close_buy_position(symbol: str, price: float, lot: float, deviation: int, position_id: int):
     """
     The code block you provided is sending a trading request to buy a symbol at a
     specific price.
@@ -150,8 +149,7 @@ def close_buy_position(symbol: str, price: float, lot: float, sl: float, tp: flo
     return result
 
 
-def close_sell_position(symbol: str, price: float, lot: float, sl: float, tp: float, deviation: int,
-                        position_id):
+def close_sell_position(symbol: str, price: float, lot: float,deviation: int, position_id: int):
     """
     The code block you provided is sending a trading request to buy a symbol at a
     specific price.
