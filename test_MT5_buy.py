@@ -1,4 +1,4 @@
-
+import MetaTrader5 as mt5
 from mtLogin import MT5Class
 
 if __name__ == "__main__":
@@ -10,13 +10,29 @@ if __name__ == "__main__":
     mt5_obj.login_to_metatrader()
     # get account info
     mt5_obj.get_acc_info()
-    
+    symbol = "BTCUSD"
+
     # get total number of orders 
     num_of_order = mt5_obj.get_all_orders()
     # get total number of order for a given symbol
-    num_of_order = mt5_obj.get_orders_total_by_symbol("USDJPY")
+    num_of_order = mt5_obj.get_orders_total_by_symbol(symbol)
     
-    symbol_info = mt5_obj.get_symbol_info("USDJPY")
+    symbol_info = mt5_obj.get_symbol_info(symbol)
+
+
+    # check the presence of open positions
+    positions_total = mt5.positions_total()
+    # get open positions on USDCHF
+    positions = mt5.positions_get(symbol=symbol)
+    if positions_total > 0:
+        print("Total positions=", positions_total)
+        print(f"Total positions on {symbol} = {len(positions)}")
+        # display all open positions
+        for position in positions:
+            print(position)
+
+    else:
+        print("Positions not found")
     """
     symbol info contains: 
     custom=False, chart_mode=0, select=True, visible=True, session_deals=0, session_buy_orders=0, session_sell_orders=0, 
@@ -42,62 +58,54 @@ if __name__ == "__main__":
     
     additional feature can be created using calculating indicator values. 
     """
-    
+
     if symbol_info is not None:
-        
+
         lot = 0.01
         point = symbol_info.point
         price = symbol_info.ask
         deviation = 20
-        
-        print(f"point {point} {type(point)}, price {price}")
-        
-        print(f"symbol info {symbol_info}")
-        
-        result = mt5_obj.buy_symbol(price=price, lot=lot, point=point, deviation=deviation)
-        
+
+        # take profit and stop loss calculations
+        tp = price + 100000 * point
+        sl =  price - 100000 * point
+
+        result = mt5_obj.buy_symbol(symbol=symbol, price=price, lot=lot, sl=sl, tp=tp, deviation=deviation)
+
         mt5_obj.result_check(result=result)
-        
+
         print(f"2. order_send done, {result}", )
         print(f"opened position with POSITION_TICKET={result.order}")
         print(f"sleep 2 seconds before closing position #{result.order}")
-        
-        # # create a close request
-        # position_id=result.order
-        # price=mt5.symbol_info_tick(symbol).bid
-        # deviation=20
-        # request={
-        #     "action": mt5.TRADE_ACTION_DEAL,
-        #     "symbol": symbol,
-        #     "volume": lot,
-        #     "type": mt5.ORDER_TYPE_SELL,
-        #     "position": position_id,
-        #     "price": price,
-        #     "deviation": deviation,
-        #     "magic": 234000,
-        #     "comment": "python script close",
-        #     "type_time": mt5.ORDER_TIME_GTC,
-        #     "type_filling": mt5.ORDER_FILLING_RETURN,
-        # }
-        # # send a trading request
-        # result=mt5.order_send(request)
-        # # check the execution result
-        # print("3. close position #{}: sell {} {} lots at {} with deviation={} points".format(position_id,symbol,lot,price,deviation));
-        # if result.retcode != mt5.TRADE_RETCODE_DONE:
-        #     print("4. order_send failed, retcode={}".format(result.retcode))
-        #     print("   result",result)
-        # else:
-        #     print("4. position #{} closed, {}".format(position_id,result))
-        #     # request the result as a dictionary and display it element by element
-        #     result_dict=result._asdict()
-        #     for field in result_dict.keys():
-        #         print("   {}={}".format(field,result_dict[field]))
-        #         # if this is a trading request structure, display it element by element as well
-        #         if field=="request":
-        #             traderequest_dict=result_dict[field]._asdict()
-        #             for tradereq_filed in traderequest_dict:
-        #                 print("       traderequest: {}={}".format(tradereq_filed,traderequest_dict[tradereq_filed]))
-        
-        # # shut down connection to the MetaTrader 5 terminal
-        # mt5.shutdown()
-    
+
+        # create a close request
+        position_id=result.order
+        price=mt5.symbol_info_tick(symbol).bid
+        deviation=20
+
+        tp = price + 100000 * point
+        sl =  price - 100000 * point
+
+        result = mt5_obj.sell_symbol(symbol=symbol, price=price, lot=lot, sl=sl, tp=tp, deviation=deviation)
+
+        # check the execution result
+        print("3. close position #{}: sell {} {} lots at {} with deviation={} points".format(
+            position_id,symbol,lot,price,deviation));
+        if result.retcode != mt5.TRADE_RETCODE_DONE:
+            print("4. order_send failed, retcode={}".format(result.retcode))
+            print("   result",result)
+        else:
+            print("4. position #{} closed, {}".format(position_id,result))
+            # request the result as a dictionary and display it element by element
+            result_dict=result._asdict()
+            for field in result_dict.keys():
+                print("   {}={}".format(field,result_dict[field]))
+                # if this is a trading request structure, display it element by element as well
+                if field=="request":
+                    traderequest_dict=result_dict[field]._asdict()
+                    for tradereq_filed in traderequest_dict:
+                        print("       traderequest: {}={}".format(tradereq_filed,
+                                                                  traderequest_dict[tradereq_filed]))
+
+        # shut down connection to the MetaTrader 5 terminal
+        mt5.shutdown()
